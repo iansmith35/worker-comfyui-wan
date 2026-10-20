@@ -1,16 +1,36 @@
 {
-  "title": "ComfyUI",
-  "description": "Generate images with ComfyUI using FLUX.1-dev (fp8)",
+  "title": "ComfyUI Wan2.1 1.3B T2V",
+  "description": "Text-to-video with Wan2.1 1.3B (ComfyUI + WanVideoWrapper + sageattention). Weights download at boot from HuggingFace via MANIFEST_URL — no network volume required. Video returned inline (VIDEO_RETURN_BASE64).",
   "type": "serverless",
-  "category": "image",
+  "category": "video",
   "iconUrl": "https://cpjrphpz3t5wbwfe.public.blob.vercel-storage.com/comfy-ui.png",
   "config": {
     "runsOn": "GPU",
-    "containerDiskInGb": 20,
-    "gpuIds": "ADA_24",
+    "containerDiskInGb": 60,
+    "gpuIds": "AMPERE_24",
     "gpuCount": 1,
     "allowedCudaVersions": ["12.7", "12.6"],
     "env": [
+      {
+        "key": "MANIFEST_URL",
+        "input": {
+          "name": "Weights manifest (aria2)",
+          "type": "string",
+          "description": "URL of an aria2 manifest listing Wan2.1 1.3B weight files. Default pulls from HuggingFace at boot.",
+          "default": "https://raw.githubusercontent.com/iansmith35/worker-comfyui-wan/main/manifest.aria2",
+          "advanced": false
+        }
+      },
+      {
+        "key": "VIDEO_RETURN_BASE64",
+        "input": {
+          "name": "Return video as base64",
+          "type": "boolean",
+          "description": "Return the generated mp4 inline in the job result (no S3 bucket needed). Set false to upload to S3 instead.",
+          "default": true,
+          "advanced": false
+        }
+      },
       {
         "key": "COMFY_ORG_API_KEY",
         "input": {
@@ -26,7 +46,7 @@
         "input": {
           "name": "S3 Bucket Endpoint URL",
           "type": "string",
-          "description": "Upload images to S3 (e.g. https://<bucket>.s3.<region>.amazonaws.com)",
+          "description": "Upload images to S3 (e.g. https://<bucket>.s3.<region>.amazonaws.com). Only used if VIDEO_RETURN_BASE64=false.",
           "default": "",
           "advanced": true
         }

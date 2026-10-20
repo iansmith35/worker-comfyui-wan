@@ -244,10 +244,9 @@ else
     if [ -n "$MANIFEST_URL" ]; then
         python -u /comfyui/main.py --disable-auto-launch --disable-metadata --listen 0.0.0.0 --port 8188 --verbose "${COMFY_LOG_LEVEL}" --log-stdout --extra-model-paths-config /comfyui/extra_model_paths.yaml $COMFY_ATTN_ARGS &
         write_comfy_pid_file "$!"
-        echo "worker-comfyui: Ephemeral mode — sleeping forever (no serverless handler)"
-        # Don't launch handler.py — there's no serverless queue feeding this pod.
-        # Sleep keeps the container alive so the orchestrator can dispatch via SSH.
-        sleep infinity
+        echo "worker-comfyui: Boot-download complete — starting serverless handler"
+        echo "worker-comfyui: Starting RunPod Handler"
+        python -u /handler.py
     else
         # ComfyUI output goes to /tmp/comfyui.log (handler embeds the tail in
         # error payloads; the R2 shipper below uploads it) AND is tailed back
